@@ -16,7 +16,8 @@ http://www.u-share.cn/forum.php?mod=viewthread&tid=23418&extra=&page=1
  - 升级 bios
     > 1. 如果开机进入 bios 后有密码，需拆机拆主板电池清除 bios 密码
     > 2. 查看 bios 的版本号，然后根据官网的升级教程来升级，注意版本号之间的升级顺序
-    > 3. 下载相对应的 bios 文件至 u 盘，插入主板进入 bios 进行选择升级
+    > 3. 下载相对应的 bios 文件解压缩后将文件拷贝至 u 盘，插入主板进入 bios 进行选择升级
+    > 4. 这里有一个小细节需要注意的是，要注意下载后的压缩包内有没有文件
  - bios 下载地址
  ```shell
 http://www.asrock.com/mb/Intel/J3455-ITX/index.cn.asp?cat=Download&os=All
@@ -25,6 +26,8 @@ http://www.asrock.com/mb/Intel/J3455-ITX/index.cn.asp?cat=Download&os=All
 ## 系统安装
  - 系统版本选择
     > 1. j3455 主板对应 群晖 ds918+, 所以系统和引导的版本选择相对应机型的
+    > 2. 本地的安装 loader 选用的版本是 1.04b
+    > 3. 系统选用 6.2.1
  - 启动盘制作
 ```shell
 https://www.nas2x.com/threads/dsm-6-2-1-20190221.29/
@@ -54,3 +57,13 @@ https://archive.synology.com/download/DSM/release/
  - DC-ATX 直插模块
  - 电源适配器
  - 1u 电源转 DC 插口挡板
+
+## 实际使用情况
+ - 机箱风扇的品牌为 gelid slient 8，这个牌子的风扇在淘宝上卖得比其他的品牌还贵，质量应该还算可以
+ - 机箱风扇为 8cm 风扇，与正常的 12cm 风扇不一样，价格还贵一些
+ - 使用 bios 将机箱风扇的挡速调至最小，声音在正常运行时几乎听不到
+ - 电源在正常使用过程中，风扇的声音也可以忽略（不排除日后长时间使用声音会逐渐变大）
+ - 电源长时间运行过程中的发热还是有的，考虑下 150w 根本用不到，考虑风扇声音变大后再改 dc 模块
+
+## 目前还存在的缺陷
+ - 不能关机和重启(看引导后面还会不会升级)
