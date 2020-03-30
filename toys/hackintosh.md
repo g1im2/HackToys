@@ -37,6 +37,14 @@ SSD | 三星 970evo 1T
  - **AppleALC 可能造成休眠重启的问题**
  > 目前的 applealc 可能对 10.15.× 的支持不是那么好，休眠或者关机过程中，可能由于音频崩溃会造成系统崩溃，从而造成重启
 
+ - **Power Schedule 可能唤醒电脑**
+ > 升级到 10.15 后，电源计划包含了 “提醒” 的闹钟内容，这可能就造成休眠的过程中，电脑可能会被唤醒。
+
+```shell
+# 使用 pmset 命令取消所有可以出发唤醒的电源计划
+sudo pmset schedule cancelall
+```
+
 ```shell
 # 打开 Clover Configuration 在 “kernel and kext patches” 选项的 “KernelToPatch”选项里添加相对应的值
 find: 63 6F 6D 2E 61 70 70 6C 65 00 5F 5F 6B 65 72 6E 65 6C 5F 5F 00
