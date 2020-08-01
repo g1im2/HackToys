@@ -21,6 +21,8 @@ Extreme Memory Profile (X.M.P.)|**Profile 1**
 Windows 8/10 Features|**Other OS**
 CSM Support|**Disable**
 Initial Display Output|**PCIe Slot 1**
+DVMT Pre-Alloc|**64M**
+DVMT Total Gfx Mem|**256M**
 Intel Platform Trust Technology (PTT)|**Disabled**
 Legacy USB Support|**Enabled**
 XHCI Hand-off|**Enabled**
@@ -39,8 +41,6 @@ Option|Value
 TBT Vt-d Base Security|**Disabled**
 Thunderbolt Boot Support |**Disabled**
 Security Level |**No Security**
-DVMT Pre-Alloc|**64M**
-DVMT Total Gfx Mem|**256M**
 
 ## 引导
 > 基于 Clover 的引导方式， OpenCore 引导方式看上去有点难度，对于急于使用的我来说，还不太现实，先通过 clover 的方式正常使用后，后面再来探索 OpenCore 的引导方式。
@@ -135,17 +135,39 @@ replace: 6E 6F 74 2E 61 70 70 6C 65 00 5F 5F 6B 65 72 6E 65 6C 5F 5F 00
 sudo pmset schedule cancelall
 ```
 
- - **USB 定制**
+### USB 定制
  > 网上查询到黑苹果的 usb 有端口数量限定，虽然有相关不定，但是对休眠会有影响，如休眠过程中移动鼠标，可能造成唤醒，通过 usb 定制，将鼠标和键盘端口设定为内置，就可以解决相关问题
 
  参考文档：[https://post.m.smzdm.com/p/a5k6q06x/](https://post.m.smzdm.com/p/a5k6q06x/)
 
- - **z390 原生 nvram 支持**
+### z390 原生 nvram 支持
 
- > 基于 opencore 的 SSDT-PMC.dsl，使用 maciasl 编译后放入 /EFI/CLOVER/ACPI/patched 当中即可
+  - 什么是 NVRAM
+  > nvram（Non-Volatile Random-Access Memory，NVRAM），是一种随机存取存储器，在电源关闭时会保留其信息（具备非易失性）。也就是说，当系统要休眠时，会存储一些信息在这块存储空间中，如果没有 NVRAM，就是说没有这块存储空间的支持，在休眠时可能会造成一些数据的丢失，那么就会造成休眠失败，同样，关机和重启也是如此。这就有可能造成休眠和关机失败，造成系统重启。
 
- - **关于OsxAptioFix2Drv-free2000.efi**
+  - Z390 支持 NVRAM
+  > 一般，如果主板本身支持 NVRAM 的读写，那是没什么问题的，如果支持又不开放出来，这就有点糟糕了。恰巧 Z390 本身支持，但是却没有开放出来。针对 Clover 的引导，需要我们去模拟 NVRAM 的支持，不过现在 OpenCore 就可以帮我们打开 NVRAM 的支持，我们现在需要做的是，将 OpenCore 支持的 ssdt 文件转移到 Clover 上，这样 Clover 引导的 efi 也能够帮我们支持原生 NVRAM。
 
+  - 测试你现在的系统是否支持 NVRAM
+```shell
+# 注意！ NVRAM 是非易失的一块存储空间，也就是说，你现在往 NVRAM 内写入数据，重启后这个写入的数据应该还是存在的，如果不存在，则不支持
+sudo nvram test_var=HelloWorld
+
+# 输入上条命令后，重启，再验证上次键入 NVRAM 的 test_var 这个 key 是否存在，并且数值是 HelloWorld
+sudo nvram -p|grep test_var
+
+# 如果想查看 NVRAM 空间内所有的数值，请输入以下命令
+sudo nvram -p
+```
+
+  - 如何打开 Z390 的 NVRAM
+  > 基于 opencore 的 SSDT-PMC.aml，使用 maciasl 编译后放入 /EFI/CLOVER/ACPI/patched 当中即可
+
+  - SSDT-PMC.aml 的下载地址
+  [点击下载 ssdt-pmc.aml](https://files.zuiyu1818.cn/Mac/SSDT-PMC.aml)
+
+### 关于OsxAptioFix2Drv-free2000.efi
+参考文档: [https://blog.xjn819.com/?p=317](https://blog.xjn819.com/?p=317)
 
 ## 一些错误的补救方法
 
@@ -153,7 +175,7 @@ sudo pmset schedule cancelall
 > 如果是因为 clover configurator 或者 hackintool 这个工具对系统设置或者补丁的修改，造成系统无法启动的情况，可以使用具备 EFI 引导功能的 U 盘，也就是说，这个 U 盘可以是你的安装盘，因为安装盘始终是可以进入安装的，此时，只需要让电脑使用 U 盘上的 EFI 来引导硬盘上的系统即可，只要能进系统，这些错误的设置都能拯救回来。
 
  - 10.15.4 升级后卡 "++++++++++++++++++++++++"， 这是因为 clover 的版本太低了导致的，只需要更新 efi 中的引导文件版本即可。
- 
+ - nvram 没有打开，导致原生电源开启后无法休眠，无法关机（点击休眠或者关机会直接重启），这是由于重做 usb 定制，在操作的过程中，不小心将 ssdt-pmc.aml 文件删除导致的，重新下载一个 ssdt-pmc.aml 文件放入相对应的文件夹即可。
 
 ## 相关链接
 
